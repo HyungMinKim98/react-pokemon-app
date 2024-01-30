@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import  { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Loading } from '../../assets/Loading';
 import { LessThan } from '../../assets/LessThan';
@@ -9,7 +9,6 @@ import { Balance } from '../../assets/Balance';
 import { Vector } from '../../assets/Vector';
 import Type from '../../components/Type';
 import BaseStat from '../../components/BaseStat';
-import DamageRelations from '../../components/DamageRelations';
 import DamageModal from '../../components/DamageModal';
 import { FormattedPokemonData } from '../../types/FormattedPokemonData';
 import { Ability, PokemonDetail, Sprites } from '../../types/PokemonDetail';
@@ -17,13 +16,6 @@ import { DamageRelationOfPokemonType } from '../../types/DamageRelationOfPokemon
 import { FlavorTextEntry, PokemonDescription } from '../../types/PokemonDescription';
 import { PokemonData } from '../../types/PokemonData';
 
-interface SpeciesResponse {
-  evolution_chain: { url: string }
-  flavor_text_entries: [{
-      flavor_text: string,
-      language: { name: string }
-  }]
-}
 
 interface nextAndPreviousPokemon {
   next: string | undefined;
@@ -66,7 +58,7 @@ const DetailPage = () => {
         const {data: pokemonData} = await axios.get<PokemonDetail>(url);
 
         if(pokemonData) {
-          const { name, id, types, weight, height, stats, abilities, sprites} = pokemonData;
+          const {  id, types, weight, height, stats, abilities, sprites} = pokemonData;
           console.log(sprites)
           const nextAndPreviousPokemon: nextAndPreviousPokemon = await getNextAndPreviousPokemon(id);
 
@@ -208,7 +200,8 @@ const DetailPage = () => {
   };
   // fetchEvolutionChain(1).then(result => console.log(result));
   fetchEvolutionChain(1).then(evolutionChain => console.log(evolutionChain));
-// 진화 정보 가져오기 시작: fetchPokemonData(id) 함수 내에서 fetchEvolutionChain(id) 함수를 호출하여 포켓몬의 진화 정보를 가져오기 시작했습니다.
+
+  // 진화 정보 가져오기 시작: fetchPokemonData(id) 함수 내에서 fetchEvolutionChain(id) 함수를 호출하여 포켓몬의 진화 정보를 가져오기 시작했습니다.
 // 진화 정보 가져오는 함수 분석: fetchEvolutionChain(id) 함수는 먼저 해당 포켓몬의 종(species)에 대한 정보를 가져온 후, 이를 통해 진화 체인 정보를 가져옵니다. 그리고 각 진화 단계의 포켓몬에 대한 정보를 수집합니다.
 // 진화 정보 할당: 가져온 진화 정보를 formattedPokemonData 객체의 evolution 필드에 할당하려 했습니다.
 // 문제 발생: 그러나 "진화 정보가 없습니다"라는 메시지가 나타났습니다. 이는 fetchEvolutionChain(id) 함수가 예상한 대로 진화 체인 정보를 불러오지 못했을 때 나타날 수 있습니다.
@@ -222,7 +215,13 @@ const DetailPage = () => {
 // 이 문제를 해결하기 위해서는 fetchEvolutionChain(id) 함수가 항상 Evolution[] 타입의 값을 반환하도록 수정해야 했습니다. 이는 함수 내에서 오류가 발생하면 빈 배열을 반환하도록 코드를 수정함으로써 해결했습니다.
 // 또한, FormattedPokemonData의 evolutionChain 필드의 타입을 Evolution[] | undefined로 변경하여 undefined를 허용하도록 수정해야 했습니다. 이 두 가지 수정을 통해 타입스크립트 오류를 해결할 수 있었습니다.
 // 이 과정에서 타입스크립트의 타입 체계를 정확히 이해하고 적용하는 것의 중요성을 다시 한번 깨닫게 되었습니다. 이는 타입스크립트를 사용하는 프로젝트에서 자주 마주치게 되는 문제이므로, 이러한 문제를 해결하는 능력은 매우 중요합니다.
-  const getEvolutionChain = async (url: string) => {
+
+type EvolutionDTO = {
+  id: number;
+  name: string;
+};
+
+const getEvolutionChain = async (url: string) => {
     const evolutionChain: EvolutionChainResponse = await axios.get(url).then(
         res => res.data
     )
@@ -318,6 +317,14 @@ const DetailPage = () => {
         return "All";
     }
 }
+
+type Stat = {
+  base_stat: number;
+  effort: number;
+  stat: {
+    name: string;
+  };
+};
 
   const formatPokemonStats =([
     statHP,

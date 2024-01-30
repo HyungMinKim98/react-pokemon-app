@@ -189,17 +189,6 @@ export interface EvolutionDTO {
 }
 
 
-// Converts JSON strings to/from your types
-// and asserts the results of JSON.parse at runtime
-export class Convert {
-  public static toWelcome(json: string): Welcome {
-      return cast(JSON.parse(json), r("Welcome"));
-  }
-
-  public static welcomeToJson(value: Welcome): string {
-      return JSON.stringify(uncast(value, r("Welcome")), null, 2);
-  }
-}
 
 function invalidValue(typ: any, val: any, key: any, parent: any = ''): never {
   const prettyTyp = prettyTypeName(typ);
@@ -321,13 +310,6 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
   return transformPrimitive(typ, val);
 }
 
-function cast<T>(val: any, typ: any): T {
-  return transform(val, typ, jsonToJSProps);
-}
-
-function uncast<T>(val: T, typ: any): any {
-  return transform(val, typ, jsToJSONProps);
-}
 
 function l(typ: any) {
   return { literal: typ };

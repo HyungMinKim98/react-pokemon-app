@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LazyImage } from './Lazyimage';
 import { Link } from 'react-router-dom';
 import { PokemonNameAndUrl } from '../types/PokemonData';
@@ -13,15 +13,23 @@ interface PokeData {
 
 export const PokeCard = ({url, name}: PokemonNameAndUrl) => {
   const [pokemon, setPokemon] = useState<PokeData>();
+  type LocalizedName = {
+    name: string;
+    language: {
+      name: string;
+    };
+  };
+  
+  const filterAndFormatName = (names: LocalizedName[]) => {
+    const koreanNames = names
+      .filter((text) => text.language.name === 'ko')
+      .map((text) => text.name.replace(/\r|\n|\f/g, ' '));
+      
+    return koreanNames[0];
+  };
+  
 
-  const filterAndFormatName = (name) => {
-    const koreanNames = name
-      ?.filter((text) => text.language.name === 'ko')
-      .map((text) => text.name.replace(/\r|\n|\f/g, ' '))
-      return koreanNames[0];
-  }
-
-  const getPokemonName = async (id) => {
+  const getPokemonName = async (id: number) => {
     const url = `https://pokeapi.co/api/v2/pokemon-species/${id}/`
 
     const {data: pokemonSpecies} = await axios.get(url)
